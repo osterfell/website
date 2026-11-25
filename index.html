@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Osterfell · Rent GPUs by the hour</title>
+<meta name="description" content="Osterfell is a GPU cloud: rent A100, H100 and RTX machines by the hour, on demand or interruptible, from the console, CLI or API.">
+<style>
+  :root { --bg:#0d0b14; --panel:#16131f; --panel2:#1c1828; --line:#2b2540; --text:#eeeaf7; --dim:#9a93b0; --accent:#ff8a3d; --accent2:#b18cff; --ok:#46d39a; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+  a { color:var(--accent2); text-decoration:none; } a:hover { text-decoration:underline; }
+  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
+  .bar { border-bottom:1px solid var(--line); background:rgba(13,11,20,.9); position:sticky; top:0; backdrop-filter:blur(8px); z-index:2; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:16px 0; gap:16px; }
+  .logo { font-weight:800; letter-spacing:.01em; display:flex; align-items:center; gap:10px; font-size:18px; }
+  .logo svg { display:block; }
+  nav { display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+  nav a { color:var(--dim); font-size:15px; }
+  .btn { display:inline-block; padding:10px 18px; border-radius:8px; font-weight:650; font-size:15px; }
+  .btn.primary { background:var(--accent); color:#2a1200; } .btn.ghost { border:1px solid var(--line); color:var(--text); }
+  .btn:hover { text-decoration:none; filter:brightness(1.08); }
+  .hero { padding:76px 0 40px; text-align:center; background:radial-gradient(700px 320px at 50% 0,rgba(177,140,255,.16),transparent 70%); }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:4px 14px; font-size:13px; color:var(--dim); margin-bottom:22px; }
+  .pill b { color:var(--ok); font-weight:600; }
+  h1 { font-size:clamp(34px,6vw,60px); line-height:1.06; margin:0 auto 18px; letter-spacing:-.025em; max-width:820px; }
+  h1 span { color:var(--accent); }
+  .lead { color:var(--dim); font-size:19px; max-width:640px; margin:0 auto 30px; }
+  .cta .btn { margin:0 5px 10px; padding:13px 24px; }
+  .facts { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin:44px 0 72px; }
+  .facts div { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 20px; text-align:left; }
+  .facts b { display:block; font-size:26px; letter-spacing:-.01em; } .facts small { color:var(--dim); }
+  h2 { font-size:30px; margin:0 0 8px; letter-spacing:-.015em; }
+  .sub { color:var(--dim); margin:0 0 24px; }
+  section { margin-bottom:76px; }
+  .tablebox { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:15px; min-width:640px; }
+  th,td { text-align:left; padding:13px 18px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  tr:last-child td { border-bottom:0; }
+  th { color:var(--dim); font-weight:500; font-size:13px; text-transform:uppercase; letter-spacing:.06em; background:var(--panel2); }
+  td.n { font-variant-numeric:tabular-nums; } td.p { font-weight:650; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .av { color:var(--ok); } .lo { color:#f0c060; }
+  .note { color:var(--dim); font-size:13px; margin-top:10px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; }
+  .card h3 { margin:0 0 8px; font-size:18px; } .card p { margin:0; color:var(--dim); font-size:15px; }
+  .tag { display:inline-block; font-size:12px; border-radius:6px; padding:2px 8px; margin-bottom:12px; background:rgba(255,138,61,.14); color:var(--accent); font-weight:600; }
+  .tag.v { background:rgba(177,140,255,.14); color:var(--accent2); }
+  .two { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:28px; align-items:center; }
+  pre { background:#08060d; border:1px solid var(--line); border-radius:14px; padding:20px; overflow-x:auto; font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; color:#d9d2ee; margin:0; }
+  pre .c { color:#6c6485; } pre .o { color:var(--ok); } pre .k { color:var(--accent); }
+  ul.ticks { list-style:none; padding:0; margin:18px 0 0; color:var(--dim); } ul.ticks li { padding-left:26px; position:relative; margin-bottom:8px; }
+  ul.ticks li::before { content:"✓"; position:absolute; left:0; color:var(--ok); font-weight:700; }
+  .host { background:linear-gradient(135deg,rgba(255,138,61,.12),rgba(177,140,255,.12)); border:1px solid var(--line); border-radius:16px; padding:36px; display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:space-between; }
+  .host p { margin:6px 0 0; color:var(--dim); max-width:560px; }
+  footer { border-top:1px solid var(--line); padding:28px 0 48px; color:var(--dim); font-size:14px; display:flex; flex-wrap:wrap; gap:8px 28px; justify-content:space-between; }
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap">
+  <header>
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="9" height="9" rx="2" fill="#ff8a3d"/><rect x="12" y="1" width="9" height="9" rx="2" fill="#b18cff"/><rect x="1" y="12" width="9" height="9" rx="2" fill="#b18cff" opacity=".55"/><rect x="12" y="12" width="9" height="9" rx="2" fill="#ff8a3d" opacity=".55"/></svg>
+      Osterfell
+    </div>
+    <nav>
+      <a href="#pricing">Pricing</a><a href="#products">Products</a><a href="#developers">Developers</a><a href="#hosting">Host GPUs</a>
+      <a class="btn ghost" href="https://console.osterfell.com/">Console</a>
+    </nav>
+  </header>
+</div></div>
+
+<div class="hero"><div class="wrap">
+  <div class="pill"><b>●</b> 312 GPUs online across 3 EU regions</div>
+  <h1>Rent a GPU in <span>under a minute</span>. Pay by the second.</h1>
+  <p class="lead">Osterfell is a GPU cloud for training and inference. Pick a machine, pick an image, get a shell. No quotas, no sales call, no minimum term.</p>
+  <div class="cta">
+    <a class="btn primary" href="#pricing">See live prices</a>
+    <a class="btn ghost" href="#developers">Use the CLI</a>
+  </div>
+  <div class="facts">
+    <div><b>from €0.19/h</b><small>RTX 4090, interruptible</small></div>
+    <div><b>42 s</b><small>median time from order to SSH</small></div>
+    <div><b>per-second</b><small>billing, stop any time</small></div>
+    <div><b>EU hosted</b><small>Frankfurt · Helsinki · Warsaw</small></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <section id="pricing">
+    <h2>Prices right now</h2>
+    <p class="sub">Per GPU, per hour. Interruptible machines can be reclaimed with 30 seconds' notice and cost about half.</p>
+    <div class="tablebox">
+      <table>
+        <tr><th>GPU</th><th>VRAM</th><th>vCPU / RAM</th><th>On demand</th><th>Interruptible</th><th>Available</th></tr>
+        <tr><td>NVIDIA H100 SXM</td><td class="n">80 GB</td><td class="n">24 / 180 GB</td><td class="p">€2.34</td><td class="p">€1.19</td><td class="lo">6 left</td></tr>
+        <tr><td>NVIDIA A100 SXM4</td><td class="n">80 GB</td><td class="n">16 / 120 GB</td><td class="p">€1.12</td><td class="p">€0.58</td><td class="av">41</td></tr>
+        <tr><td>NVIDIA L40S</td><td class="n">48 GB</td><td class="n">16 / 96 GB</td><td class="p">€0.86</td><td class="p">€0.44</td><td class="av">28</td></tr>
+        <tr><td>NVIDIA RTX A6000</td><td class="n">48 GB</td><td class="n">12 / 64 GB</td><td class="p">€0.52</td><td class="p">€0.27</td><td class="av">57</td></tr>
+        <tr><td>NVIDIA RTX 4090</td><td class="n">24 GB</td><td class="n">12 / 48 GB</td><td class="p">€0.38</td><td class="p">€0.19</td><td class="av">134</td></tr>
+        <tr><td>NVIDIA RTX 3090</td><td class="n">24 GB</td><td class="n">8 / 32 GB</td><td class="p">€0.21</td><td class="p">€0.11</td><td class="av">46</td></tr>
+      </table>
+    </div>
+    <p class="note">Storage €0.04 per GB per month. Egress is free up to 1 TB per instance per month. Prices exclude VAT.</p>
+  </section>
+
+  <section id="products">
+    <h2>Three ways to run</h2>
+    <p class="sub">Same machines, same images, different guarantees.</p>
+    <div class="grid">
+      <div class="card"><span class="tag">On demand</span><h3>Yours until you stop it</h3><p>A dedicated GPU with root in a container or a full VM. Good for training runs you do not want to checkpoint around.</p></div>
+      <div class="card"><span class="tag v">Interruptible</span><h3>Half price, can be reclaimed</h3><p>Bid for idle capacity. You get a signal before the machine goes; your volume stays and the job resumes on the next one.</p></div>
+      <div class="card"><span class="tag">Endpoints</span><h3>Autoscaled inference</h3><p>Give us an image and a port. We keep between zero and N replicas warm and bill only for the seconds they run.</p></div>
+    </div>
+  </section>
+
+  <section id="developers">
+    <div class="two">
+      <div>
+        <h2>Built for the terminal</h2>
+        <p class="sub">Everything in the console is an API call. The CLI is a thin wrapper around it.</p>
+        <ul class="ticks">
+          <li>Search offers by GPU, price, region and reliability</li>
+          <li>Start from PyTorch, vLLM, ComfyUI or your own image</li>
+          <li>SSH, Jupyter and port forwarding out of the box</li>
+          <li>REST API and Python SDK with the same vocabulary</li>
+        </ul>
+      </div>
+<pre><span class="c"># find the cheapest 80 GB card and start it</span>
+$ <span class="k">ofl</span> search "vram>=80 region=eu" --sort price
+ID      GPU          €/h    REGION    UPTIME
+48211   A100 SXM4    0.58   hel-1     99.4%
+48307   A100 SXM4    0.61   fra-2     99.8%
+47990   H100 SXM     1.19   waw-1     99.1%
+
+$ <span class="k">ofl</span> create 48211 --image pytorch:2.5-cuda12 --disk 80
+<span class="o">instance i-7c41 running</span> in hel-1 after 38 s</pre>
+    </div>
+  </section>
+
+  <section id="hosting">
+    <div class="host">
+      <div>
+        <h2>Have idle GPUs? Put them to work.</h2>
+        <p>Data centres and labs list spare capacity on Osterfell and are paid monthly for the hours rented. You set the floor price; we handle billing, isolation and support.</p>
+      </div>
+      <a class="btn primary" href="mailto:hosting@osterfell.com?subject=Hosting%20GPUs">Talk to hosting</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Osterfell. New accounts are opened by invitation while we add capacity.</span>
+    <span><a href="mailto:hello@osterfell.com">hello@osterfell.com</a> · <a href="mailto:security@osterfell.com">security@osterfell.com</a></span>
+  </footer>
+</div>
+</body>
+</html>
